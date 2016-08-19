@@ -2364,7 +2364,7 @@ void M_ScreenShot (void)
 
       do
         sprintf(lbmname,                         //jff 3/30/98 pcx or bmp?
-                screenshot_pcx ? "doom%02d.pcx" : "doom%02d.bmp", shot++);
+                screenshot_pcx ? "%s/doom%02d.pcx" : "%s/doom%02d.bmp", D_DoomExeDir(), shot++);
       while (!access(lbmname,0) && --tries);
 
       if (tries)

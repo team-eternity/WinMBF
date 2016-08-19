@@ -36,6 +36,7 @@ static const char rcsid[] = "$Id: d_main.c,v 1.47 1998/05/16 09:16:51 killough E
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #include "doomdef.h"
 #include "doomstat.h"
@@ -532,12 +533,21 @@ char *D_DoomExeDir(void)
    static char *base;
    if(!base)        // cache multiple requests
    {
+#ifndef __unix__
       size_t len = strlen(*myargv) + 1;
       char *p;
+#else
+      char *home = getenv ("HOME");
+      if (!home || !*home)
+        return (".");
+      size_t len = strlen(home) + strlen("/.winmbf/") + 1;
+      int err = 0;
+#endif
 
       base = malloc(len);
       memset(base, 0, len);
 
+#ifndef __unix__
       p = base + len - 1;
       
       strncpy(base, *myargv, len);
@@ -552,6 +562,13 @@ char *D_DoomExeDir(void)
          *p = '\0';
          p--;
       }
+#else
+      snprintf (base, len, "%s/.winmbf/", home);
+      err = mkdir (base, S_IRWXU);
+
+      if (err == -1 && errno != EEXIST)
+        return (".");
+#endif
    }
 
    if(*base == '\0')
@@ -852,7 +869,7 @@ void IdentifyVersion (void)
 
   // set save path to -save parm or current dir
 
-  strcpy(basesavegame,".");       //jff 3/27/98 default to current dir
+  strcpy(basesavegame, D_DoomExeDir());       //jff 3/27/98 default to current dir
   if ((i=M_CheckParm("-save")) && i<myargc-1) //jff 3/24/98 if -save present
     {
       if (!stat(myargv[i+1],&sbuf) && S_ISDIR(sbuf.st_mode)) // and is a dir
