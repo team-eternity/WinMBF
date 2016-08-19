@@ -722,6 +722,10 @@ boolean WadFileStatus(char *filename,boolean *isdir)
 // killough 11/98: simplified, removed error-prone cut-n-pasted code
 //
 
+#ifndef DATADIR
+#define DATADIR D_DoomExeDir()
+#endif
+
 char *FindIWADFile(void)
 {
   static const char *envvars[] = {"DOOMWADDIR", "HOME"};
@@ -756,7 +760,7 @@ char *FindIWADFile(void)
 
   for (j=0; j<2; j++)
     {
-      strcpy(iwad, j ? D_DoomExeDir() : ".");
+      strcpy(iwad, j ? DATADIR : ".");
       NormalizeSlashes(iwad);
       printf("Looking in %s\n",iwad);   // killough 8/8/98
       if (*customiwad)
