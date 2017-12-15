@@ -722,13 +722,14 @@ boolean WadFileStatus(char *filename,boolean *isdir)
 // killough 11/98: simplified, removed error-prone cut-n-pasted code
 //
 
-#ifndef DATADIR
-#define DATADIR D_DoomExeDir()
-#endif
-
 char *FindIWADFile(void)
 {
   static const char *envvars[] = {"DOOMWADDIR", "HOME"};
+  const char *dirs[] = {".", D_DoomExeDir(),
+#ifdef DATADIR
+    DATADIR,
+#endif
+    };
   static char iwad[PATH_MAX+1], customiwad[PATH_MAX+1];
   boolean isdir=false;
   int i,j;
@@ -758,9 +759,9 @@ char *FindIWADFile(void)
           AddDefaultExtension(strcat(strcpy(customiwad, "/"), iwad), ".wad");
     }
 
-  for (j=0; j<2; j++)
+  for (j=0; j<sizeof dirs/sizeof *dirs; j++)
     {
-      strcpy(iwad, j ? DATADIR : ".");
+      strcpy(iwad, dirs[j]);
       NormalizeSlashes(iwad);
       printf("Looking in %s\n",iwad);   // killough 8/8/98
       if (*customiwad)
