@@ -34,5 +34,11 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([atexit memmove memset mkdir pow putenv strcasecmp strchr strdup strerror strncasecmp strrchr strstr strtol])
 
+AC_ARG_ENABLE([dogs], AS_HELP_STRING([--disable-dogs], [Disable support for helper dogs]))
+AS_IF([test "x$enable_dogs" != "xno"], [AC_DEFINE([DOGS])])
+
+AC_ARG_ENABLE([beta], AS_HELP_STRING([--disable-beta], [Disable support for beta emulation]))
+AS_IF([test "x$enable_beta" != "xno"], [AC_DEFINE([BETA])])
+
 AC_CONFIG_FILES([Makefile Source/Makefile])
 AC_OUTPUT
